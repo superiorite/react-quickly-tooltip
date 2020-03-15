@@ -1,12 +1,56 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+class Tooltip extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {opacity: false}
+		this.toggle = this.toggle.bind(this)
+	}
+	//Метод для отображения и скрытия текста
+	toggle() {
+		const tooltipNode = ReactDOM.findDOMNode(this)
+		this.setState({
+			opacity: !this.state.opacity,
+			top: tooltipNode.offsetTop,
+			left: tooltipNode.offsetLeft
+		})	
+	}
+	render() {
+		const style = {
+			zIndex: (this.state.opacity) ? 1000 : -1000,
+			opacity: +this.state.opacity,
+			top: (this.state.top || 0) + 20,
+			left: (this.state.left || 0) - 30
+		}
+		return (
+			<div style={{display: 'inline'}}>
+				<span style={{color: 'blue'}}
+					onMouseEnter={this.toggle}
+					onMouseOut={this.toggle}>
+					{this.props.children}
+				</span>
+			<div className="tooltip bottom" style={style} role="tooltip">
+				<div className="tooltip-qrrow"></div>
+				<div className="tooltip-inner">
+					{this.props.text}
+				</div>
+			</div>
+		</div>
+		);
+	}
+}
+
+ReactDOM.render(
+	<div>
+		<h1>Tooltip Widget</h1>
+			Hello.
+		<Tooltip text="The book you're reading now"> React Quickly </Tooltip>
+			was published in 2017. It's awesome!
+	</div>
+	,document.getElementById('root')
+	);
+
